@@ -15,7 +15,7 @@ def index(request):
         pix = get_image_data(img)
         img_string = img.name[:-4]+".mid"
         pixels_to_midi(pix,img_string)
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return HttpResponse("it worked?")
 
 def get_image_data(img):
     im = Image.open(img)
@@ -26,7 +26,7 @@ def rgb_to_midi(rgb):
     return 21 + (rgb%87)
 
 def pixels_to_midi(pix,img_string):
-    mf = MIDIFile(1)
+    mf = MIDIFile(1)3
     track = 0
     time = 0
     channel = 0
