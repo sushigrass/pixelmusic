@@ -12,10 +12,12 @@ from midiutil.MidiFile import MIDIFile
 def index(request):
     if request.method == "POST":
         img = request.FILES['file[0]']
+        print img
         pix = get_image_data(img)
         img_string = img.name[:-4]+".mid"
         pixels_to_midi(pix,img_string)
-    return HttpResponse("it worked?")
+        with open(img_string, "r") as f:
+            return HttpResponse(f)
 
 def get_image_data(img):
     im = Image.open(img)
