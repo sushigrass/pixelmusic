@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>pixelmusic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="js/midi.min.js"/>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script>
+  var mp1, mp2;
+  function init() {
+      // Example 1. This will loop 5 times, and has a callback function at the end.
+      var callback = function() { document.getElementById('btn1').value = 'play'; }
+      mp1 = new MidiPlayer('Saved.mid', 'btn1', true, 5, callback);
+      mp1.setDebugDiv('msg');
+      // Example 2. This will not loop.
+      mp2 = new MidiPlayer('Bach_Badinerie.mid', 'btn2');
+  }
+  function doPlay(m, btn) {
+      if (btn.value == 'play') {
+          m.play();
+          btn.value = 'stop';
+      }
+      else {
+          m.stop();
+          btn.value = 'play';
+      }
+  }
+
+  function uploadFile() {
+      mp1 = new MidiPlayer('Bach_Badinerie.mid', 'btn1');
+      var file = document.getElementById('filechooser').files[0];
+      var formData = new FormData();
+      formData.append("fileToUpload", file);
+
+      $.ajax({
+         url: "http://127.0.0.1:8000/index/",
+         type: "POST",
+         data: formData,
+         processData: false,
+         contentType: false,
+         success: function(response) {
+            console.log("SUCCESS");
+         },
+         error: function(jqXHR, textStatus, errorMessage) {
+             console.log(errorMessage);
+         }
+      });
+  }
+  </script>
+</head>
+  <body onload="javascript:init();">
+    <input type="file" id="filechooser">
+    <button onclick=uploadFile()></button>
+    <input type="button" value="play" id='btn1' onclick="doPlay(mp1, this);"/>
+    <input type="button" value="play" id='btn2' onclick="doPlay(mp2, this);"/><br/><br/>
+  </body>
+</html>

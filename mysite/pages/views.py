@@ -7,17 +7,23 @@ import numpy as np
 import random
 from PIL import Image
 from midiutil.MidiFile import MIDIFile
+from django.views.generic import View
+from django.shortcuts import render
+
+class FrontEndRenderView(View):
+    @csrf_exempt
+    def get(self, request, *args, **kwargs):
+        return render(request, "index.html",{})
 
 @csrf_exempt
 def index(request):
+    print "IN HERE"
     if request.method == "POST":
-        img = request.FILES['file[0]']
-        print img
+        img = request.FILES['fileToUpload']
         pix = get_image_data(img)
         img_string = img.name[:-4]+".mid"
         pixels_to_midi(pix,img_string)
-        with open(img_string, "r") as f:
-            return HttpResponse(f)
+        return HttpResponse("it worked?")
 
 def get_image_data(img):
     im = Image.open(img)
