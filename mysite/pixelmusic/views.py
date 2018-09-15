@@ -26,7 +26,7 @@ def rgb_to_midi(rgb):
     return 21 + (rgb%87)
 
 def pixels_to_midi(pix,img_string):
-    mf = MIDIFile(1)3
+    mf = MIDIFile(1)
     track = 0
     time = 0
     channel = 0
