@@ -5,32 +5,148 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>pixelmusic</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="js/midi.min.js"/>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script>
-  var mp1, mp2;
-  function init() {
-      // Example 1. This will loop 5 times, and has a callback function at the end.
-      var callback = function() { document.getElementById('btn1').value = 'play'; }
-      mp1 = new MidiPlayer('Saved.mid', 'btn1', true, 5, callback);
-      mp1.setDebugDiv('msg');
-      // Example 2. This will not loop.
-      mp2 = new MidiPlayer('Bach_Badinerie.mid', 'btn2');
-  }
-  function doPlay(m, btn) {
-      if (btn.value == 'play') {
-          m.play();
-          btn.value = 'stop';
-      }
-      else {
-          m.stop();
-          btn.value = 'play';
-      }
-  }
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+  <canvas style="width: 100%;height: 100%;z-index:-1;" id="myCanvas"></canvas>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/96/three.js"></script>
+  <script type="text/javascript">
+  function getRandomArbitrary(min, max) {
+            return Math.random() * (max - min) + min;
+        }
 
+        var renderer,
+            scene,
+            camera,
+            mesh,
+            myCanvas = document.getElementById('myCanvas'),
+            cassies = [],
+
+            //RENDERER
+
+            renderer = new THREE.WebGLRenderer({
+                canvas: myCanvas,
+                antialias: true,
+                alpha: true
+            });
+        renderer.setClearColor(0xffffff, 0);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //SCENE
+        scene = new THREE.Scene();
+
+        //CAMERA
+
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.z = 100;
+
+        // var camera = new THREE.OrthographicCamera(100 / -2, 50 / 2, 100 / 2, 100 / -2, 1, 1000);
+
+
+        // camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
+        // camera.position.set(0, 0, 10);
+        scene.add(camera);
+
+
+
+        //LIGHTS
+        var light = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(light);
+
+        var light2 = new THREE.PointLight(0xffffff, 0.5);
+        scene.add(light2);
+
+        var material = new THREE.MeshNormalMaterial({
+            wireframe: true,
+            wireframeLinewidth: 6,
+            transparent: false,
+            opacity: 1,
+
+        });
+
+        //ORBIT CONTROL
+        // controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+
+        //GEOMETRIES
+
+        //LOADING THE CASSIE
+
+        var loader = new THREE.JSONLoader();
+        loader.load('https://res.cloudinary.com/dilgjzsjl/raw/upload/v1513016147/cassietutorial_ipuvym.json', handle_load);
+
+        //ONE CASSIE
+        // function handle_load(geometry, materials) {
+
+        //     var material = new THREE.MeshNormalMaterial();
+        //     mesh = new THREE.Mesh(geometry, material);
+        //     scene.add(mesh);
+        //     mesh.position.z = -30;
+        //     mesh.position.y = -4;
+        //     console.log(mesh);
+
+        // }
+
+        function handle_load(geometry, materials) {
+            for (var i = 0; i < 200; i++) {
+
+                var material = new THREE.MeshNormalMaterial();
+                var mesh = new THREE.Mesh(geometry, material);
+                mesh.position.x = getRandomArbitrary(-40, 50);
+                mesh.position.y = getRandomArbitrary(-30, 30);
+                mesh.position.z = getRandomArbitrary(-100, 0);
+                mesh.rotation.x = Math.random() * 2 * Math.PI;
+                mesh.rotation.y = Math.random() * 2 * Math.PI;
+                mesh.rotation.z = Math.random() * 2 * Math.PI;
+                scene.add(mesh);
+                cassies.push(mesh);
+            }
+        }
+
+        // var geometry2 = new THREE.SphereGeometry(50, 20, 20);
+        // var mesh2 = new THREE.Mesh(geometry2, material);
+        // mesh2.position.z = -200;
+        // mesh2.position.x = 100;
+        // scene.add(mesh2);
+
+        // var geometry3 = new THREE.PlaneGeometry(10000, 10000, 100, 100);
+        // var mesh3 = new THREE.Mesh(geometry3, material);
+        // mesh3.rotation.x = -90 * Math.PI / 180;
+        // mesh3.position.y = -40;
+        // scene.add(mesh3);
+
+
+        //RENDER LOOP
+
+        render();
+
+        function render() {
+
+
+            camera.position.z = Math.sin(Date.now() * 0.0001) * 35;
+            camera.position.x = Math.sin(Date.now() * 0.0006) * 3;
+            camera.position.y = Math.sin(Date.now() * 0.0006) * 5;
+            // camera.lookAt(mesh2.position);
+
+
+            /*
+            for (var i = 0; mesh && i < 50; i++) {
+                mesh.rotation.x += (0.5 / 300 * Math.PI);
+            }
+            */
+            for (var i = 0; i < cassies.length; i++) {
+                cassies[i].rotation.x += (0.5 / 300 * Math.PI);
+            }
+            // console.log(mesh.length);
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(render);
+            // controls.update();
+        }
+  var midi_file;
   function uploadFile() {
-      mp1 = new MidiPlayer('Bach_Badinerie.mid', 'btn1');
       var file = document.getElementById('filechooser').files[0];
+      midi_file = file.name.slice(0, -3) + "mid";
+      console.log(midi_file);
       var formData = new FormData();
       formData.append("fileToUpload", file);
 
@@ -41,7 +157,8 @@
          processData: false,
          contentType: false,
          success: function(response) {
-            console.log("SUCCESS");
+            document.getElementById('download_link').setAttribute("href", midi_file);
+            document.getElementById('download').hidden = false;
          },
          error: function(jqXHR, textStatus, errorMessage) {
              console.log(errorMessage);
@@ -50,10 +167,18 @@
   }
   </script>
 </head>
-  <body onload="javascript:init();">
-    <input type="file" id="filechooser">
-    <button onclick=uploadFile()></button>
-    <input type="button" value="play" id='btn1' onclick="doPlay(mp1, this);"/>
-    <input type="button" value="play" id='btn2' onclick="doPlay(mp2, this);"/><br/><br/>
+  <body style="background-color: #030303;margin: 0;overflow:">
+
+    <div class="vapor">
+      <div style="position: absolute; z-index: 1; left: 50%; top: 50%;">
+        <input style="width:500px; height:20px;color:white;" type="file" id="filechooser">
+      </div>
+      <div style="position: absolute; z-index: 1; left: 50%; top: 60%;">
+        <button style="width:100px; height:20px;" onclick="uploadFile()">Upload</button>
+      </div>
+      <div hidden=true id="download" style="position: absolute; z-index: 1; left: 50%; top: 70%;">
+        <a style="color:white;width:100px; height:20px;font-size:50px" id="download_link" href="" download>DownLoaD youR Midi FILe</a>
+      </div>
+  </div>
   </body>
 </html>

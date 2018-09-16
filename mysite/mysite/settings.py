@@ -10,9 +10,9 @@ SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'ln8kyv(a588d)&y$_b88=^4t0nl&#l1qw^wf5sr^#mx583@mqk'
 
-DEBUG = True
+#DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
 CSRF_COOKIE_SECURE = False
