@@ -8,6 +8,8 @@
   <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
   <canvas style="width: 100%;height: 100%;z-index:-1;" id="myCanvas"></canvas>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/96/three.js"></script>
+  <script type='text/javascript' src='http://www.midijs.net/lib/midi.js'></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script type="text/javascript">
   function getRandomArbitrary(min, max) {
             return Math.random() * (max - min) + min;
@@ -87,7 +89,7 @@
         // }
 
         function handle_load(geometry, materials) {
-            for (var i = 0; i < 200; i++) {
+            for (var i = 0; i < 2; i++) {
 
                 var material = new THREE.MeshNormalMaterial();
                 var mesh = new THREE.Mesh(geometry, material);
@@ -144,9 +146,10 @@
         }
   var midi_file;
   function uploadFile() {
+
+      $('#loading').show();
       var file = document.getElementById('filechooser').files[0];
       midi_file = file.name.slice(0, -3) + "mid";
-      console.log(midi_file);
       var formData = new FormData();
       formData.append("fileToUpload", file);
 
@@ -159,26 +162,35 @@
          success: function(response) {
             document.getElementById('download_link').setAttribute("href", midi_file);
             document.getElementById('download').hidden = false;
+            $('#loading').hide();
          },
          error: function(jqXHR, textStatus, errorMessage) {
+             $('#loading').hide();
              console.log(errorMessage);
          }
       });
+
   }
+
   </script>
+  <script type='text/javascript' src='http://www.midijs.net/lib/midi.js'></script>
 </head>
   <body style="background-color: #030303;margin: 0;overflow:">
 
     <div class="vapor">
       <div style="position: absolute; z-index: 1; left: 50%; top: 50%;">
-        <input style="width:500px; height:20px;color:white;" type="file" id="filechooser">
+          <input style="width:500px; height:20px;color:white;" type="file" id="filechooser">
+      </div>
+      <div id="loading" style="position: absolute; z-index: 1; left: 50%; top: 55%;" hidden>
+          <i class="fa fa-circle-o-notch fa-spin" style="font-size:24px;color:white;"></i>
       </div>
       <div style="position: absolute; z-index: 1; left: 50%; top: 60%;">
-        <button style="width:100px; height:20px;" onclick="uploadFile()">Upload</button>
+          <button style="width:100px; height:20px;" onclick="uploadFile()">convert</button>
+            <button onClick="MIDIjs.play('Bach_Badinerie.mid');">Play My Song</button>
       </div>
       <div hidden=true id="download" style="position: absolute; z-index: 1; left: 50%; top: 70%;">
-        <a style="color:white;width:100px; height:20px;font-size:50px" id="download_link" href="" download>DownLoaD youR Midi FILe</a>
+          <a style="color:white;width:100px; height:20px;font-size:50px" id="download_link" href="" download>DownLoaD youR Midi FILe</a>
       </div>
-  </div>
+    </div>
   </body>
 </html>
