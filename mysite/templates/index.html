@@ -149,7 +149,6 @@
 
       $('#loading').show();
       var file = document.getElementById('filechooser').files[0];
-      midi_file = file.name.slice(0, -3) + "mid";
       var formData = new FormData();
       formData.append("fileToUpload", file);
 
@@ -160,6 +159,8 @@
          processData: false,
          contentType: false,
          success: function(response) {
+            console.log(response);
+            midi_file = response;
             document.getElementById('download_link').setAttribute("href", midi_file);
             document.getElementById('download').hidden = false;
             $('#loading').hide();
@@ -170,6 +171,10 @@
          }
       });
 
+  }
+
+  function showLink() {
+    $('#link').show();
   }
 
   </script>
@@ -186,10 +191,12 @@
       </div>
       <div style="position: absolute; z-index: 1; left: 50%; top: 60%;">
           <button style="width:100px; height:20px;" onclick="uploadFile()">convert</button>
-            <button onClick="MIDIjs.play('Bach_Badinerie.mid');">Play My Song</button>
       </div>
       <div hidden=true id="download" style="position: absolute; z-index: 1; left: 50%; top: 70%;">
-          <a style="color:white;width:100px; height:20px;font-size:50px" id="download_link" href="" download>DownLoaD youR Midi FILe</a>
+          <a onClick="showLink()" style="color:white;width:100px; height:20px;font-size:20px" id="download_link" href="" download>DownLoaD youR Midi FILe</a>
+      </div>
+      <div hidden=true id="link" style="position: absolute; z-index: 1; left: 50%; top: 80%;">
+          <a href="https://onlinesequencer.net/import" style="color:white;width:100px; height:20px;font-size:20px">Play your downloaded fiLe here</a>
       </div>
     </div>
   </body>

@@ -9,6 +9,7 @@ from PIL import Image
 from midiutil.MidiFile import MIDIFile
 from django.views.generic import View
 from django.shortcuts import render
+import time as t
 
 class FrontEndRenderView(View):
     @csrf_exempt
@@ -21,9 +22,9 @@ def index(request):
     if request.method == "POST":
         img = request.FILES['fileToUpload']
         pix = get_image_data(img)
-        img_string = img.name[:-4]+".mid"
+        img_string = str(t.time())[:10]+".mid"
         pixels_to_midi(pix,img_string)
-        return HttpResponse("it worked?")
+        return HttpResponse(img_string)
 
 def get_image_data(img):
     im = Image.open(img)
@@ -51,6 +52,5 @@ def pixels_to_midi(pix,img_string):
         else:
             mf.addNote(track, channel, p3, time, duration, volume)
         time += 1
-    print "done"
     with open(img_string, 'wb') as outf:
         mf.writeFile(outf)
